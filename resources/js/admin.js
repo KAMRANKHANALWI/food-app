@@ -1,7 +1,17 @@
 import axios from "axios";
 import moment from "moment";
 
-export function initAdmin() {
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.classList.add('notification');
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    setTimeout(() => {
+        notification.remove();
+    }, 2000); 
+}
+
+export function initAdmin(socket) {
     const orderTableBody = document.querySelector('#orderTableBody');
     let orders = [];
     let markup;
@@ -75,5 +85,13 @@ export function initAdmin() {
         `;
         }).join('');
     }
+
+    // Socket
+    socket.on('orderPlaced', (order) => {
+        showNotification('New Order!') 
+        orders.unshift(order)
+        orderTableBody.innerHTML = ''
+        orderTableBody.innerHTML = generateMarkup(orders)
+    })
 }
 
